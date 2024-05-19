@@ -1,4 +1,4 @@
-package com.Ivan.primerApiREST.model.entities;
+package com.Ivan.apiREST.model.entities;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,9 +1,9 @@
-package com.Ivan.primerApiREST.service.impl;
+package com.Ivan.apiREST.service.impl;
 
-import com.Ivan.primerApiREST.model.dao.ClienteDao;
-import com.Ivan.primerApiREST.model.dto.ClienteDto;
-import com.Ivan.primerApiREST.model.entities.Cliente;
-import com.Ivan.primerApiREST.service.IClienteService;
+import com.Ivan.apiREST.model.dao.ClienteDao;
+import com.Ivan.apiREST.model.dto.ClienteDto;
+import com.Ivan.apiREST.model.entities.Cliente;
+import com.Ivan.apiREST.service.IClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

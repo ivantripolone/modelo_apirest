@@ -1,4 +1,4 @@
-package com.Ivan.primerApiREST.model.dto;
+package com.Ivan.apiREST.model.dto;
 
 import lombok.Builder;
 import lombok.Data;

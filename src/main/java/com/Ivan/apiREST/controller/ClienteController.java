@@ -1,9 +1,9 @@
-package com.Ivan.primerApiREST.controller;
+package com.Ivan.apiREST.controller;
 
-import com.Ivan.primerApiREST.model.dto.ClienteDto;
-import com.Ivan.primerApiREST.model.entities.Cliente;
-import com.Ivan.primerApiREST.payload.MensajeResponse;
-import com.Ivan.primerApiREST.service.IClienteService;
+import com.Ivan.apiREST.model.dto.ClienteDto;
+import com.Ivan.apiREST.model.entities.Cliente;
+import com.Ivan.apiREST.payload.MensajeResponse;
+import com.Ivan.apiREST.service.IClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;

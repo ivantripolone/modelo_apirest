@@ -1,7 +1,7 @@
-package com.Ivan.primerApiREST.service;
+package com.Ivan.apiREST.service;
 
-import com.Ivan.primerApiREST.model.dto.ClienteDto;
-import com.Ivan.primerApiREST.model.entities.Cliente;
+import com.Ivan.apiREST.model.dto.ClienteDto;
+import com.Ivan.apiREST.model.entities.Cliente;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.Ivan.primerApiREST.payload;
+package com.Ivan.apiREST.payload;
 
 import lombok.Builder;
 import lombok.Data;
