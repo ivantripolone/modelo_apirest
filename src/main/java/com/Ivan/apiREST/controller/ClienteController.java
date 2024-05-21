@@ -1,32 +1,41 @@
 package com.Ivan.apiREST.controller;
-
+import com.Ivan.apiREST.exception.BadRequestException;
+import com.Ivan.apiREST.exception.ResourceNotFoundException;
 import com.Ivan.apiREST.model.dto.ClienteDto;
 import com.Ivan.apiREST.model.entities.Cliente;
-import com.Ivan.apiREST.payload.MensajeResponse;
+import com.Ivan.apiREST.payload.ApiResponse;
+
 import com.Ivan.apiREST.service.IClienteService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping(ClienteController.STRING)
 public class ClienteController {
+    public static final String STRING = "/api/v1/";
+    private static final String URL_CLIENTE = "cliente/";
+    private final IClienteService clienteService;
     @Autowired
-    private IClienteService clienteService;
+    public ClienteController(IClienteService clienteService) {
+        this.clienteService = clienteService;
+    }
 
     @PostMapping("cliente")
-    public ResponseEntity create(@RequestBody ClienteDto clienteDto) {
+    public ResponseEntity<ApiResponse> create(@RequestBody @Valid ClienteDto clienteDto) {
         Cliente clienteSave = null;
         try {
             clienteSave = clienteService.save(clienteDto);
             String message = "Guardado correctamente";
-            return getMensajeResponseEntity(message, getClienteDto(clienteSave), HttpStatus.CREATED);
+            return getMensajeResponseEntity(message, getClienteDto(clienteSave),STRING+ URL_CLIENTE +clienteSave.getIdCliente(), HttpStatus.CREATED);
         } catch (DataAccessException exDt) {
-            return getMensajeResponseEntity(exDt.getMessage(), null, HttpStatus.METHOD_NOT_ALLOWED);
+            throw new BadRequestException(exDt.getMessage());
         }
     }
 
@@ -34,56 +43,56 @@ public class ClienteController {
 
 
     @PutMapping("cliente/{id}")
-    public ResponseEntity<?> update(@RequestBody ClienteDto clienteDto, @PathVariable Integer id) {
+    public ResponseEntity<ApiResponse> update(@RequestBody @Valid ClienteDto clienteDto, @PathVariable Integer id) {
         Cliente clienteUpdate = null;
         try {
             if (clienteService.existsById(id)) {
                 clienteDto.setIdCliente(id);
                 clienteUpdate = clienteService.save(clienteDto);
                 String message = "Guardado correctamente";
-                return getMensajeResponseEntity(message, getClienteDto(clienteUpdate), HttpStatus.CREATED);
+                return getMensajeResponseEntity(message, getClienteDto(clienteUpdate),STRING+ URL_CLIENTE + id, HttpStatus.CREATED);
             } else {
-                String message = "El registro que intenta actualizar no se encuentra en la base de datos.";
-                return getMensajeResponseEntity(message, null, HttpStatus.NOT_FOUND);
+                throw new ResourceNotFoundException("cliente", "id", id);
             }
         } catch (DataAccessException exDt) {
-            return getMensajeResponseEntity(exDt.getMessage(), null, HttpStatus.METHOD_NOT_ALLOWED);
+            throw  new BadRequestException(exDt.getMessage());
         }
     }
 
 
     @DeleteMapping("cliente/{id}")
-    public ResponseEntity delete(@PathVariable Integer id){
+    public ResponseEntity<ApiResponse> delete(@PathVariable Integer id){
         try {
             Cliente clienteDelete = clienteService.findById(id);
             clienteService.delete(clienteDelete);
-            return new ResponseEntity(clienteDelete, HttpStatus.NO_CONTENT);
-        }catch (DataAccessException exDt) {
-            return getMensajeResponseEntity(exDt.getMessage(), null, HttpStatus.METHOD_NOT_ALLOWED);
+            String message= "Se elimino correctamente el cliente del id: " + id;
+            return getMensajeResponseEntity(message,clienteDelete,STRING+ URL_CLIENTE +id, HttpStatus.NO_CONTENT);
         }
+        catch (DataAccessException exDt) {
+        throw  new BadRequestException(exDt.getMessage());
+    }
     }
 
     @GetMapping("clientes")
-    public ResponseEntity<?> showAll() {
+    public ResponseEntity<ApiResponse> showAll() {
         List<Cliente> getList = clienteService.listAlll();
         if (getList == null) {
-            String message= "No hay registros";
-            return getMensajeResponseEntity(message, null, HttpStatus.OK);
+            throw new ResourceNotFoundException("clientes");
+
         }
-        return getMensajeResponseEntity("", getList, HttpStatus.OK);
+        return getMensajeResponseEntity("", getList,STRING+"clientes", HttpStatus.OK);
     }
 
 
     @GetMapping("cliente/{id}")
-    public ResponseEntity<?> showById(@PathVariable Integer id) {
-        Cliente cliente = clienteService.findById(id);
+    public ResponseEntity<ApiResponse> showById(@PathVariable Integer id) {
+        Cliente clienteActual = clienteService.findById(id);
 
-        if (cliente == null) {
-            String message = "El registro que intenta buscar, no existe!!";
-            return getMensajeResponseEntity(message, null, HttpStatus.NOT_FOUND);
+        if (clienteActual == null) {
+            throw  new ResourceNotFoundException("cliente", "id", id);
         }
 
-        return getMensajeResponseEntity("", getClienteDto(cliente), HttpStatus.OK);
+        return getMensajeResponseEntity("", getClienteDto(clienteActual),STRING+ URL_CLIENTE + id , HttpStatus.OK);
     }
 
 
@@ -97,8 +106,8 @@ public class ClienteController {
                 .build();
     }
 
-    private static ResponseEntity<MensajeResponse> getMensajeResponseEntity(String message, Object objet, HttpStatus status) {
-        MensajeResponse mensajeResponse = MensajeResponse.builder().mensaje(message).object(objet).build();
+    private static ResponseEntity<ApiResponse> getMensajeResponseEntity(String message, Object objet, String url, HttpStatus status) {
+        ApiResponse mensajeResponse = new ApiResponse(message, url,objet);
         return new ResponseEntity<>(mensajeResponse, status);
     }
 
